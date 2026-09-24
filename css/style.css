@@ -118,3 +118,19 @@ body {
   font-size: 1em;
   word-break: break-word;
 }
+
+/* Кнопка удаления */
+.task__delete {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 0 5px;
+  margin-left: 10px;
+  transition: color 0.3s;
+}
+
+.task__delete:hover {
+  color: #e74c3c;
+}

@@ -1,8 +1,8 @@
 let tasks = [
   /* Массив задач */
-  { id: 1, text: "Изучить JavaScript", done: false },
-  { id: 2, text: "Сделать To-Do", done: true },
-  { id: 3, text: "Залить на GitHub", done: false },
+  { id: crypto.randomUUID(), text: "Изучить JavaScript", done: false },
+  { id: crypto.randomUUID(), text: "Сделать To-Do", done: true },
+  { id: crypto.randomUUID(), text: "Залить на GitHub", done: false },
 ];
 
 const taskList = document.querySelector("#task-list"); /* Список <ul> */
@@ -16,7 +16,7 @@ function render() {
     const li = document.createElement("li");
     li.className = "task";
     if (task.done) li.classList.add("task--done");
-    li.innerHTML = `<span class="task__text">${task.text}</span>`;
+    li.innerHTML = `<span class="task__text">${task.text}</span> <button class="task__delete" data-id="${task.id}" aria-label="Удалить">✕</button>`;
     taskList.appendChild(li);
   });
   updateCounter();
@@ -45,5 +45,14 @@ form.addEventListener("submit", (event) => {
   };
   tasks.push(newTask);
   input.value = "";
+  render();
+});
+
+// Удаление
+taskList.addEventListener("click", (event) => {
+  const deleteBtn = event.target.closest(".task__delete");
+  if (!deleteBtn) return;
+  const id = deleteBtn.dataset.id;
+  tasks = tasks.filter((task) => task.id !== id);
   render();
 });
