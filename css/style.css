@@ -90,3 +90,31 @@ body {
   padding-top: 15px;
   border-top: 1px solid #e0e0e0;
 }
+
+/*Задача */
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #6666cc;
+  transition: background 0.3s;
+}
+
+.task--done {
+  border-left-color: #4caf50;
+  opacity: 0.6;
+}
+
+.task--done .task__text {
+  text-decoration: line-through;
+  color: #999;
+}
+
+.task__text {
+  flex: 1;
+  font-size: 1em;
+  word-break: break-word;
+}
