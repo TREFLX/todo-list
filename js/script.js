@@ -30,3 +30,20 @@ function updateCounter() {
 }
 
 render();
+
+const form = document.querySelector("#task-form");
+const input = document.querySelector("#task-input");
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const text = input.value.trim();
+  if (text === "") return;
+  const newTask = {
+    id: crypto.randomUUID(),
+    text: text,
+    done: false,
+  };
+  tasks.push(newTask);
+  input.value = "";
+  render();
+});
