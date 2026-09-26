@@ -21,6 +21,13 @@
         />
         <button type="submit" class="app__add-btn">Добавить</button>
       </form>
+      <div class="app__filters" id="filters">
+        <button class="app__filter app__filter--active" data-filter="all">
+          Все
+        </button>
+        <button class="app__filter" data-filter="active">Активные</button>
+        <button class="app__filter" data-filter="done">Выполненые</button>
+      </div>
       <ul class="app__list" id="task-list"></ul>
       <footer class="app__footer">
         <span class="app__counter" id="counter">0 Задач</span>

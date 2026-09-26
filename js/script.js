@@ -1,33 +1,49 @@
 let tasks = [];
+let currentFilter = "all";
 
 //Загруза из LocalStorege
-function loadTasks() {
-  const saved = localStorage.getItem("tasks");
-  if (saved) {
-    return JSON.parse(saved);
+function loadState() {
+  const savedTasks = localStorage.getItem("tasks");
+  if (savedTasks) {
+    return JSON.parse(savedTasks);
+  } else {
+    [
+      { id: crypto.randomUUID(), text: "Изучить JavaScript", done: false },
+      { id: crypto.randomUUID(), text: "Сделать To-Do", done: true },
+      { id: crypto.randomUUID(), text: "Залить на GitHub", done: false },
+    ];
   }
-  return [
-    { id: crypto.randomUUID(), text: "Изучить JavaScript", done: false },
-    { id: crypto.randomUUID(), text: "Сделать To-Do", done: true },
-    { id: crypto.randomUUID(), text: "Залить на GitHub", done: false },
-  ];
+  const savedFilter = localStorage.getItem("filter");
+  if (savedFilter) {
+    currentFilter = savedFilter;
+  }
 }
-
 // Сохранение в LocalStorege
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
+  localStorage.setItem("filter", currentFilter);
 }
 
-tasks = loadTasks();
-
-const taskList = document.querySelector("#task-list"); /* Список <ul> */
-const counter = document.querySelector("#counter"); /* Счётчик */
+//Подстветка активного фильтра
+function updateActiveFilter() {
+  document.querySelectorAll(".app__filter").forEach((btn) => {
+    btn.classList.toggle(
+      "app__filter--active",
+      btn.dataset.filter === currentFilter,
+    );
+  });
+}
 
 // Функция рендера
 function render() {
   taskList.innerHTML = "";
+  const filtered = tasks.filter((task) => {
+    if (currentFilter === "active") return !task.done;
+    if (currentFilter === "done") return task.done;
+    return true;
+  });
 
-  tasks.forEach((task) => {
+  filtered.forEach((task) => {
     const li = document.createElement("li");
     li.className = "task";
     li.dataset.id = task.id;
@@ -38,17 +54,21 @@ function render() {
   updateCounter();
 }
 
+const taskList = document.querySelector("#task-list"); /* Список <ul> */
+const counter = document.querySelector("#counter"); /* Счётчик */
+const form = document.querySelector("#task-form");
+const input = document.querySelector("#task-input");
+
+loadState();
+updateActiveFilter();
+render();
+
 // Функция счетчика
 function updateCounter() {
   const total = tasks.length;
   const done = tasks.filter((t) => t.done).length;
   counter.textContent = `${done} из ${total}`;
 }
-
-render();
-
-const form = document.querySelector("#task-form");
-const input = document.querySelector("#task-input");
 
 // Добавление
 form.addEventListener("submit", (event) => {
@@ -90,5 +110,16 @@ taskList.addEventListener("click", (event) => {
     return task;
   });
   saveTasks();
+  render();
+});
+
+// Фильтры
+const filters = document.querySelector("#filters");
+filters.addEventListener("click", (event) => {
+  const btn = event.target.closest(".app__filter");
+  if (!btn) return;
+  currentFilter = btn.dataset.filter;
+  saveTasks();
+  updateActiveFilter();
   render();
 });
