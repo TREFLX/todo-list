@@ -15,6 +15,7 @@ function render() {
   tasks.forEach((task) => {
     const li = document.createElement("li");
     li.className = "task";
+    li.dataset.id = task.id;
     if (task.done) li.classList.add("task--done");
     li.innerHTML = `<span class="task__text">${task.text}</span> <button class="task__delete" data-id="${task.id}" aria-label="Удалить">✕</button>`;
     taskList.appendChild(li);
@@ -54,5 +55,21 @@ taskList.addEventListener("click", (event) => {
   if (!deleteBtn) return;
   const id = deleteBtn.dataset.id;
   tasks = tasks.filter((task) => task.id !== id);
+  render();
+});
+
+// Обработка выполнено/не выполнено
+taskList.addEventListener("click", (event) => {
+  const taskItem = event.target.closest(".task");
+  if (!taskItem) return;
+  if (event.target.closest(".task__delete")) return;
+
+  const id = taskItem.dataset.id;
+  tasks = tasks.map((task) => {
+    if (task.id === id) {
+      return { ...task, done: !task.done };
+    }
+    return task;
+  });
   render();
 });
