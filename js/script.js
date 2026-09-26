@@ -1,9 +1,24 @@
-let tasks = [
-  /* Массив задач */
-  { id: crypto.randomUUID(), text: "Изучить JavaScript", done: false },
-  { id: crypto.randomUUID(), text: "Сделать To-Do", done: true },
-  { id: crypto.randomUUID(), text: "Залить на GitHub", done: false },
-];
+let tasks = [];
+
+//Загруза из LocalStorege
+function loadTasks() {
+  const saved = localStorage.getItem("tasks");
+  if (saved) {
+    return JSON.parse(saved);
+  }
+  return [
+    { id: crypto.randomUUID(), text: "Изучить JavaScript", done: false },
+    { id: crypto.randomUUID(), text: "Сделать To-Do", done: true },
+    { id: crypto.randomUUID(), text: "Залить на GitHub", done: false },
+  ];
+}
+
+// Сохранение в LocalStorege
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+tasks = loadTasks();
 
 const taskList = document.querySelector("#task-list"); /* Список <ul> */
 const counter = document.querySelector("#counter"); /* Счётчик */
@@ -35,6 +50,7 @@ render();
 const form = document.querySelector("#task-form");
 const input = document.querySelector("#task-input");
 
+// Добавление
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const text = input.value.trim();
@@ -46,6 +62,7 @@ form.addEventListener("submit", (event) => {
   };
   tasks.push(newTask);
   input.value = "";
+  saveTasks();
   render();
 });
 
@@ -55,6 +72,7 @@ taskList.addEventListener("click", (event) => {
   if (!deleteBtn) return;
   const id = deleteBtn.dataset.id;
   tasks = tasks.filter((task) => task.id !== id);
+  saveTasks();
   render();
 });
 
@@ -71,5 +89,6 @@ taskList.addEventListener("click", (event) => {
     }
     return task;
   });
+  saveTasks();
   render();
 });
