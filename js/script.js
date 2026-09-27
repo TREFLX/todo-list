@@ -1,13 +1,20 @@
-let tasks = [];
-let currentFilter = "all";
+let tasks = []; //Массив задач
+let currentFilter = "all"; // Текущий фильтр
 
-//Загруза из LocalStorege
+const taskList = document.querySelector("#task-list");
+const emptyMsg = document.querySelector("#empty");
+const counter = document.querySelector("#counter");
+const form = document.querySelector("#task-form");
+const input = document.querySelector("#task-input");
+const clearBtn = document.querySelector("#clear-done");
+
+//Загрузка
 function loadState() {
   const savedTasks = localStorage.getItem("tasks");
   if (savedTasks) {
-    return JSON.parse(savedTasks);
+    tasks = JSON.parse(savedTasks);
   } else {
-    [
+    tasks = [
       { id: crypto.randomUUID(), text: "Изучить JavaScript", done: false },
       { id: crypto.randomUUID(), text: "Сделать To-Do", done: true },
       { id: crypto.randomUUID(), text: "Залить на GitHub", done: false },
@@ -18,7 +25,8 @@ function loadState() {
     currentFilter = savedFilter;
   }
 }
-// Сохранение в LocalStorege
+
+// Сохранение
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
   localStorage.setItem("filter", currentFilter);
@@ -32,6 +40,20 @@ function updateActiveFilter() {
       btn.dataset.filter === currentFilter,
     );
   });
+}
+
+// Функция счетчика
+function updateCounter() {
+  const total = tasks.length;
+  const done = tasks.filter((t) => t.done).length;
+  counter.textContent = `${done} из ${total}`;
+}
+
+// Тектст для пустого списка
+function getEmptyMessage() {
+  if (currentFilter === "active") return "Все задачи выполнены 🎉";
+  if (currentFilter === "done") return "Нет выполненных задач";
+  return "Пока нет задач. Добавь первую!";
 }
 
 // Функция рендера
@@ -51,24 +73,18 @@ function render() {
     li.innerHTML = `<span class="task__text">${task.text}</span> <button class="task__delete" data-id="${task.id}" aria-label="Удалить">✕</button>`;
     taskList.appendChild(li);
   });
+  if (filtered.length === 0) {
+    emptyMsg.hidden = false;
+    emptyMsg.textContent = getEmptyMessage();
+  } else {
+    emptyMsg.hidden = true;
+  }
   updateCounter();
 }
-
-const taskList = document.querySelector("#task-list"); /* Список <ul> */
-const counter = document.querySelector("#counter"); /* Счётчик */
-const form = document.querySelector("#task-form");
-const input = document.querySelector("#task-input");
 
 loadState();
 updateActiveFilter();
 render();
-
-// Функция счетчика
-function updateCounter() {
-  const total = tasks.length;
-  const done = tasks.filter((t) => t.done).length;
-  counter.textContent = `${done} из ${total}`;
-}
 
 // Добавление
 form.addEventListener("submit", (event) => {
@@ -121,5 +137,15 @@ filters.addEventListener("click", (event) => {
   currentFilter = btn.dataset.filter;
   saveTasks();
   updateActiveFilter();
+  render();
+});
+
+//Очистка
+clearBtn.addEventListener("click", () => {
+  const hasDone = tasks.some((task) => task.done);
+  if (!hasDone) return;
+
+  tasks = tasks.filter((task) => !task.done);
+  saveTasks();
   render();
 });
